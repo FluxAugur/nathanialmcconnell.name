@@ -2,4 +2,4 @@
 title: author
 ---
 
-**Mr. Gatsby** Proin ornare ligula eu tellus tempus elementum. Aenean [bibendum](/) iaculis mi, nec blandit lacus interdum vitae. Vestibulum non nibh risus, a scelerisque purus. :hearts:
+**Nathanial McConnell** - I'm a freelance software engineer and full-stack web developer. Follow me [@fluxaugur](https://twitter.com/fluxaugur) if you want to be informed about new articles. I'm open to any suggestions from you. Do not hesitate to tell me what you think.

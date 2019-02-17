@@ -84,11 +84,12 @@ const styles = theme => ({
       position: "absolute",
       top: "85px",
       textAlign: "center",
-      left: "50%",
+      left: "53%",
       transform: "translate(-50%)",
       transition: "all .5s",
       ".is-aside.open &": {
-        left: "60%",
+        fontSize: `${theme.info.fonts.boxTitleSizeM}em`,
+        left: "69%",
         top: `${1.9 - theme.info.fonts.boxTitleSizeL}em`,
         textAlign: "left"
       }
