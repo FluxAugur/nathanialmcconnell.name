@@ -1,0 +1,38 @@
+version: 0.2
+
+env:
+  ALGOLIA_APP_ID=VX77OAX5PA
+  ALGOLIA_SEARCH_ONLY_API_KEY=cbe31a2ca14943d57db58b42e7edf262
+  ALGOLIA_ADMIN_API_KEY=2ab99be568c5d4b24523f41907096ecc
+  ALGOLIA_INDEX_NAME=CONTENT
+
+phases:
+  pre_build:
+    commands:
+      - echo Installing source NPM dependencies...
+      - npm install
+  build:
+    commands:
+      - echo Build started on `date`
+      - npm run build
+  post_build:
+    commands:
+      # copy the contents of /build to s3
+      - aws s3 cp --recursive --acl public-read build s3://${DeployBucket}/
+      # set the cache-control headers for service-worker.js to prevernt browser caching
+      - >
+        aws s3 cp --acl public-read
+        --cache-control="max-age=0, no-cache, no-store, must-revalidate"
+        ./build/service-worker.js s3://${DeployBucket}/
+      # set the cache-control headers for index.html to prevent browser caching
+      - >
+        aws s3 cp --acl public-read
+        --cache-control="max-age=0, no-cache, no-store, must-revalidate"
+        ./build/index.html s3://${DeployBucket}/
+      # invalidate the CloudFront cache for index.html and service-worker.js to force CloudFront to update its edge locations with new versions
+      - >
+        aws cloudfront create-invalidation --distribution-id ${Distribution} --paths /index.html /service-worker.js
+artifacts:
+  files:
+    - '**/*'
+  base-directory: build
