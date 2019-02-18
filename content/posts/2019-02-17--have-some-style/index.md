@@ -1,7 +1,7 @@
 ---
 title: Have some style
 subTitle: And love yourself
-category: "life-philosophies", "music", "prince"
+category: "prince"
 cover: cover.jpg
 ---
 
