@@ -206,6 +206,15 @@ Resources:
         Type: !Ref BuildType
         ComputeType: !Ref BuildComputeType
         Image: !Sub ${BuildImage}
+        EnvironmentVariables:
+          - Name: ALGOLIA_APP_ID
+            Value: !Ref AlgoliaAppId
+          - Name: ALGOLIA_SEARCH_ONLY_API_KEY
+            Value: !Ref AlgoliaSearchOnlyApiKey
+          - Name: ALGOLIA_ADMIN_API_KEY
+            Value: !Ref AlgoliaAdminApiKey
+          - Name: ALGOLIA_INDEX_NAME
+            Value: !Ref AlgoliaIndexName
       Source:
         Type: CODEPIPELINE
         BuildSpec: !Sub |
