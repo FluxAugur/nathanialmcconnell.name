@@ -1,7 +1,7 @@
 ---
 title: I got it, style!
 subTitle: words to live by, by Prince
-category: "life philosophy"
+category: "music"
 cover: cover.png
 ---
 **_Style_** is the sixth track on the third disc of Prince's 19th album Emancipation, the third album to be credited to **O(+>**, and was released on November 19, 1996. Emancipation was, notably, the third album Prince released in 1996 (along with the *Girl 6* soundtrack and *Chaos and Disorder*) and the first album after he had fulfilled his contract with Warner Bros.
