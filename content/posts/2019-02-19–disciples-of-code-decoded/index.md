@@ -1,6 +1,12 @@
-# Disciples of Code, Decoded
-
+---
+title: disciples of code, decoded
+subTitle: past (and present) view on coding
+category: "musing"
+cover: cover.png
+---
 Originally posted on my now-defunct teaching/learning site, Disciples of Code, on February 17, 2014. 
+
+![Disciples of Code logo](./logo.png)
 
 ## On Code
 

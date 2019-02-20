@@ -1,5 +1,5 @@
 ---
-title: I got it, style!
+title: i got it, style!
 subTitle: words to live by, by Prince
 category: "music"
 cover: cover.png
