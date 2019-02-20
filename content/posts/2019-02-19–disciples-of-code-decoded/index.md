@@ -19,7 +19,7 @@ I say code, you say program. He says script, she says app. Does it matter? Putti
 
 Does this sound familiar? It should. It is identical to the way in which we learn any human language. Code is simply a machine language. While some human languages are moire difficult to learn than others, some machine languages involve trickier grammar or more complex syntax. The driving purpose for learning in both cases is whether the language learner can create something that makes sense to others.
 
-Machine languages differ from human languages in many important ways. Speaking and listening aren&rsquo;t often a crucial part of machine languages, but they are vital to human languages; speaking code is not usually performative. Human languages tend to be chronological and have a structural basis at the sentence level. Machine languages don&rsquo;t require strict chronologies, and often encourage using conditional structures to branch off from the linear path — perhaps, infinitely.
+Machine languages differ from human languages in many important ways. Speaking and listening aren't often a crucial part of machine languages, but they are vital to human languages; speaking code is not usually performative. Human languages tend to be chronological and have a structural basis at the sentence level. Machine languages don't require strict chronologies, and often encourage using conditional structures to branch off from the linear path — perhaps, infinitely.
 
 ## Decoding the Why
 
@@ -43,7 +43,7 @@ Many people these days feel that they have few options. Buried under crushing de
 
 ### Discipline is important in learning any new skill
 
-So you are ready to begin your journey and learn to code, but you don’t know where to begin. Of course, information is free, for those willing to find it, but not all information is as valuable or worthwhile when you are just starting out. At this point, you can&rsquo;t tell bad code from good. You have no idea whether you should start out by thumbing through some massive tome of seemingly arcane jargon in an attempt to glean some tidbit of understanding, or simply fire up your trusty Internet search engine and dive in head-first.
+So you are ready to begin your journey and learn to code, but you don’t know where to begin. Of course, information is free, for those willing to find it, but not all information is as valuable or worthwhile when you are just starting out. At this point, you can't tell bad code from good. You have no idea whether you should start out by thumbing through some massive tome of seemingly arcane jargon in an attempt to glean some tidbit of understanding, or simply fire up your trusty Internet search engine and dive in head-first.
 
 Here’s where I have to throw out a few caveats. If you want to reap all of the benefits outlined in above (and many, many more), you’re going to have to put forth a not insignificant amount of effort. You need to learn the correct way of communicating before you can make the machines sing. You need to gain a deep understanding of the methodology and purpose behind each symbol, word, or sentence to be able to fluently and effortlessly convey your own meaning. And all of this takes discipline. You must make the decision now to set aside some time every day to learn and practice, to sharpen and reinforce, to improve. But don’t worry, before you know it, you’ll be writing code in your spare time just for the joy of it. Trust me.
 
