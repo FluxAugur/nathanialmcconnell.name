@@ -1,26 +1,28 @@
-import React from "react"
+import React from "react";
+import PropTypes from "prop-types";
+import injectSheet from "react-jss";
 
-const loveSymbolStyle = {
-  @font-face {
-    font-family: `PrincePlain`;
-    src: url(`https://s3.amazonaws.com/nathanialmcconnell-name-fonts/ttf/PrincePlain.ttf`) format(`truetype`);
-  }
-}
-
-export default class LoveSymbol extends React.Component {
-  static defaultProps = {
-    initialText: 'S'
-  }
-
-  state = {
-    text: String(this.props.initialText)
-  }
-
-  render() {
-    return {
-      <span style={loveSymbolStyle}>
-        {this.state.value}
-      </span>
+const styles = theme => ({
+  loveSymbol: {
+    [`@font-face`]: {
+      fontDamily: `PrincePlain`,
+      src: `url(https://s3.amazonaws.com/nathanialmcconnell-name-fonts/ttf/PrincePlain.ttf) format(truetype)`
     }
   }
-}
+});
+
+const LoveSymbol = props => {
+  const { text } = props;
+
+  return (
+    <love-symbol className={text}>
+      <LoveSymbol content={text} />
+    </love-symbol>
+  );
+};
+
+LoveSymbol.propTypes = {
+  text: PropTypes.object
+};
+
+export default injectSheet(styles)(LoveSymbol);
