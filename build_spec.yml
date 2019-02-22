@@ -4,6 +4,8 @@ phases:
     commands:
       - echo Installing source NPM dependencies...
       - npm install
+      - echo Cleaning project...
+      - npm run clean
   build:
     commands:
       - echo Build started on `date`
