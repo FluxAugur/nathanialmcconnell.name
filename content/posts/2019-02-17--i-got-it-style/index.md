@@ -8,7 +8,7 @@ cover: cover.png
 
 This song has very laid-back, almost conversational, lyrics, which are often quite humorous. Throughout, Prince muses on various traits and qualities that make up his idea of "Style." Many of these are definitely #lifegoals. Here's a few of my favorites.
 
-![Close-up of Prince's face surrounded by the hood of a luxurious and fluffy coat](./prince.png)
+![Close-up of Prince's face surrounded by the hood of a luxurious and fluffy coat](cover.png)
 
 > Style is keeping a promise. 
 

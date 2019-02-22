@@ -8,4 +8,4 @@ cover: cover.png
 >
 > — EA Games
 
-![Man with cap has a questioning expression](questioning.png)
+![Man with cap has a questioning expression](cover.png)

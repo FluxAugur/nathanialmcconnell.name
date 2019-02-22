@@ -8,4 +8,4 @@ cover: cover.png
 >
 > — Prince
 
-![Prince casting an almost condescending smirk to his right](prince.png)
+![Prince casting an almost condescending smirk to his right](cover.png)

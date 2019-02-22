@@ -9,4 +9,4 @@ cover: cover.png
 >
 > — Nathanial L. McConnell
 
-![Cat casting the shadow of a lion](lion.png)
+![Cat casting the shadow of a lion](cover.png)
