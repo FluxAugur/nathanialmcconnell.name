@@ -1,10 +1,13 @@
 ---
-AWSTemplateFormatVersion: '2010-09-09'
+AWSTemplateFormatVersion: "2010-09-09"
 Description: Pipeline using CodePipeline and CodeBuild for continuous delivery of a single-page progressive web application to S3
 Parameters:
   SiteBucketName:
     Type: String
     Description: Name of bucket to create to host the website
+  SiteHostedZoneId:
+    Type: String
+    Description: Route 53 hosted zone ID that might look something like KVN49DWYBF5E8M
   GitHubOwner:
     Type: String
     Default: FluxAugur
@@ -23,35 +26,36 @@ Parameters:
     NoEcho: True
   BuildType:
     Type: String
-    Default: 'LINUX_CONTAINER'
+    Default: "LINUX_CONTAINER"
     Description: The build container type to use for building the app
   BuildComputeType:
     Type: String
-    Default: 'BUILD_GENERAL1_SMALL'
+    Default: "BUILD_GENERAL1_SMALL"
     Description: The build compute type to use for building the app
   BuildImage:
     Type: String
-    Default: 'aws/codebuild/nodejs:8.11.0'
+    Default: "aws/codebuild/nodejs:8.11.0"
     Description: The build image to use for building the app
   AlgoliaAppId:
     Type: String
-    Description: 'Algolia app identifier'
+    Description: Algolia app identifier
   AlgoliaSearchOnlyApiKey:
     Type: String
-    Description: 'Algolia search API access key'
+    Description: Algolia search API access key
   AlgoliaAdminApiKey:
     Type: String
-    Description: 'Algolia admin API access key'
+    Description: Algolia admin API access key
   AlgoliaIndexName:
     Type: String
-    Description: 'Algolia index name'
+    Description: Algolia index name
 Metadata:
   AWS::CloudFormation::Interface:
     ParameterGroups:
       - Label:
-          default: 'Site Configuration'
+          default: Site Configuration
         Parameters:
           - SiteBucketName
+          - SiteHostedZoneId
       - Label:
           default: GitHub Configuration
         Parameters:
@@ -75,6 +79,8 @@ Metadata:
     ParameterLabels:
       SiteBucketName:
         default: Name of S3 bucket to create for website hosting
+      SiteHostedZoneId:
+        default: ID of Route 53 hosted zone
       GitHubOwner:
         default: GitHub user or organization name
       GitHubRepo:
@@ -101,87 +107,89 @@ Resources:
   CodeBuildRole:
     Type: AWS::IAM::Role
     Properties:
+      RoleName: !Sub ${SiteBucketName}.CodeBuildRole
       AssumeRolePolicyDocument:
-        Version: '2012-10-17'
+        Version: "2012-10-17"
         Statement:
-        - Effect: Allow
-          Principal:
-            Service:
-            - codebuild.amazonaws.com
-          Action:
-          - sts:AssumeRole
-      Path: '/service-role/'
+          - Effect: Allow
+            Principal:
+              Service:
+                - codebuild.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      Path: "/service-role/"
       Policies:
-      - PolicyName: codebuild-service
-        PolicyDocument:
-          Statement:
-          - Effect: Allow
-            Action:
-            - s3:GetObject
-            - s3:GetObjectVerion
-            - s3:GetBucketVersioning
-            - s3:PutObject
-            Resource:
-            - !GetAtt PipelineBucket.Arn
-            - !Join ['', [!GetAtt PipelineBucket.Arn, '/*']]
-          - Effect: Allow
-            Action:
-            - s3:GetObject
-            - s3:GetObjectVersion
-            - s3:GetBucketVersioning
-            - s3:PutObject
-            - s3:PutObjectAcl
-            Resource:
-            - !GetAtt SiteBucket.Arn
-            - !Join ['', [!GetAtt SiteBucket.Arn, '/*']]
-          - Effect: Allow
-            Action:
-            - logs:CreateLogGroup
-            - logs:CreateLogStream
-            - logs:PutLogEvents
-            - cloudfront:CreateInvalidation
-            Resource: '*'
+        - PolicyName: codebuild-service
+          PolicyDocument:
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:GetObject
+                  - s3:GetObjectVerion
+                  - s3:GetBucketVersioning
+                  - s3:PutObject
+                Resource:
+                  - !GetAtt PipelineBucket.Arn
+                  - !Join ["", [!GetAtt PipelineBucket.Arn, "/*"]]
+              - Effect: Allow
+                Action:
+                  - s3:GetObject
+                  - s3:GetObjectVersion
+                  - s3:GetBucketVersioning
+                  - s3:PutObject
+                  - s3:PutObjectAcl
+                Resource:
+                  - !GetAtt SiteBucket.Arn
+                  - !Join ["", [!GetAtt SiteBucket.Arn, "/*"]]
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                  - cloudfront:CreateInvalidation
+                Resource: "*"
   CodePipelineRole:
     Type: AWS::IAM::Role
     Properties:
+      RoleName: !Sub ${SiteBucketName}.CodePipelineRole
       AssumeRolePolicyDocument:
-        Version: '2012-10-17'
+        Version: "2012-10-17"
         Statement:
-        - Effect: Allow
-          Principal:
-            Service:
-            - codepipeline.amazonaws.com
-          Action:
-          - sts:AssumeRole
-      Path: '/service-role/'
+          - Effect: Allow
+            Principal:
+              Service:
+                - codepipeline.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      Path: "/service-role/"
       Policies:
-      - PolicyName: codepipeline-service
-        PolicyDocument:
-          Statement:
-          - Effect: Allow
-            Action:
-            - s3:GetObject
-            - s3:getObjectVersion
-            - s3:GetBucketVersioning
-            Resource:
-            - !GetAtt PipelineBucket.Arn
-            - !Join ['', [!GetAtt PipelineBucket.Arn, '/*']]
-          - Effect: Allow
-            Action:
-            - s3:PutObject
-            Resource:
-            - arn:aws:s3:::codepipeline*
-          - Effect: Allow
-            Action:
-            - codebuild:BatchGetBuilds
-            - codebuild:StartBuild
-            Resource: '*'
-          - Effect: Allow
-            Action:
-            - s3:*
-            - cloudformation:*
-            - iam:PassRole
-            Resource: '*'
+        - PolicyName: codepipeline-service
+          PolicyDocument:
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:GetObject
+                  - s3:getObjectVersion
+                  - s3:GetBucketVersioning
+                Resource:
+                  - !GetAtt PipelineBucket.Arn
+                  - !Join ["", [!GetAtt PipelineBucket.Arn, "/*"]]
+              - Effect: Allow
+                Action:
+                  - s3:PutObject
+                Resource:
+                  - arn:aws:s3:::codepipeline*
+              - Effect: Allow
+                Action:
+                  - codebuild:BatchGetBuilds
+                  - codebuild:StartBuild
+                Resource: "*"
+              - Effect: Allow
+                Action:
+                  - s3:*
+                  - cloudformation:*
+                  - iam:PassRole
+                Resource: "*"
   SiteBucket:
     Type: AWS::S3::Bucket
     DeletionPolicy: Delete
@@ -193,11 +201,13 @@ Resources:
   PipelineBucket:
     Type: AWS::S3::Bucket
     DeletionPolicy: Delete
+    Properties:
+      BucketName: !Sub ${SiteBucketName}.Pipeline
   CodeBuildDeploySite:
     Type: AWS::CodeBuild::Project
     DependsOn: CodeBuildRole
     Properties:
-      Name: !Sub ${AWS::StackName}-DeploySite
+      Name: !Sub ${SiteBucketName}.DeploySite
       Description: Deploy site to S3
       ServiceRole: !GetAtt CodeBuildRole.Arn
       Artifacts:
@@ -244,40 +254,41 @@ Resources:
   Pipeline:
     Type: AWS::CodePipeline::Pipeline
     Properties:
+      Name: !Sub ${SiteBucketName}.Pipeline
       RoleArn: !GetAtt CodePipelineRole.Arn
       Stages:
-      - Name: Source
-        Actions:
-        - InputArtifacts: []
-          Name: Source
-          ActionTypeId:
-            Category: Source
-            Owner: ThirdParty
-            Version: '1'
-            Provider: GitHub
-          OutputArtifacts:
-          - Name: SourceArtifacts
-          Configuration:
-            Owner: !Ref GitHubOwner
-            Repo: !Ref GitHubRepo
-            Branch: !Ref GitHubBranch
-            OAuthToken: !Ref GitHubToken
-          RunOrder: 1
-      - Name: Deploy
-        Actions:
-        - Name: Artifact
-          ActionTypeId:
-            Category: Build
-            Owner: AWS
-            Version: '1'
-            Provider: CodeBuild
-          InputArtifacts:
-          - Name: SourceArtifacts
-          OutputArtifacts:
-          - Name: DeploymentArtifacts
-          Configuration:
-            ProjectName: !Ref CodeBuildDeploySite
-          RunOrder: 1
+        - Name: Source
+          Actions:
+            - InputArtifacts: []
+              Name: Source
+              ActionTypeId:
+                Category: Source
+                Owner: ThirdParty
+                Version: "1"
+                Provider: GitHub
+              OutputArtifacts:
+                - Name: SourceArtifacts
+              Configuration:
+                Owner: !Ref GitHubOwner
+                Repo: !Ref GitHubRepo
+                Branch: !Ref GitHubBranch
+                OAuthToken: !Ref GitHubToken
+              RunOrder: 1
+        - Name: Deploy
+          Actions:
+            - Name: Artifact
+              ActionTypeId:
+                Category: Build
+                Owner: AWS
+                Version: "1"
+                Provider: CodeBuild
+              InputArtifacts:
+                - Name: SourceArtifacts
+              OutputArtifacts:
+                - Name: DeploymentArtifacts
+              Configuration:
+                ProjectName: !Ref CodeBuildDeploySite
+              RunOrder: 1
       ArtifactStore:
         Type: S3
         Location: !Ref PipelineBucket
@@ -291,7 +302,12 @@ Resources:
           - DomainName: !GetAtt SiteBucket.DomainName
             Id: !Ref SiteBucketName
             S3OriginConfig:
-              OriginAccessIdentity: ''
+              OriginAccessIdentity: ""
+        Aliases:
+          - CNAME: !GetAtt SiteBucket.DomainName
+            Quantity: 1
+        HttpVersion: http2
+        IsIPV6Enabled: true
         DefaultCacheBehavior:
           MinTTL: 86400
           MaxTTL: 31536000
@@ -299,6 +315,34 @@ Resources:
             QueryString: true
           TargetOriginId: !Ref SiteBucketName
           ViewerProtocolPolicy: redirect-to-https
+        ViewerCertificate:
+          SslSupportMethod: sni-only
+          AcmCertificateArn: arn:aws:acm:us-east-1:096188391785:certificate/2ab36cf4-10d7-4a14-bb81-79b6555df0f8
+  SiteDNS:
+    Type: AWS::Route53::RecordSetGroup
+    Properties:
+      HostedZoneId: !Ref SiteHostedZoneId
+      RecordSets:
+        - Name: !GetAtt SiteBucket.DomainName
+          Type: A
+          AliasTarget:
+            HostedZoneId: Z3GHCWB8V7K4G7
+            DNSName: !GetAtt Distribution.DistributionConfig.Origin.DomainName
+        - Name: !GetAtt SiteBucket.DomainName
+          Type: AAAA
+          AliasTarget:
+            HostedZoneId: Z3GHCWB8V7K4G7
+            DNSName: !GetAtt Distribution.DistributionConfig.Origin.DomainName
+        - Name: !Join [".", ["www", !Ref SiteHostedZoneId]]
+          Type: CNAME
+          TTL: "900"
+          ResourceRecords:
+            - !GetAtt SiteBucket.DomainName
+  ForceRemoveBucket:
+    Type: Custom::cfnCliWrapper
+    Properties:
+      ServiceToken: arn:aws:lambda:us-east-1:096188391785:function:cli2cloudformation-dev
+      CliCommandDelete: aws s3 rb s3://${SiteBucketName} --force
 Outputs:
   PipelineUrl:
     Value: !Sub https://console.aws.amazon.com/codepipeline/home?region=${AWS::Region}#/view/${Pipeline}
