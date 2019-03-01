@@ -1,0 +1,808 @@
+{
+  "service": {
+    "service": "name.nathanialmcconnell.www",
+    "serviceObject": {
+      "name": "name.nathanialmcconnell.www"
+    },
+    "provider": {
+      "stage": "dev",
+      "region": "us-east-1",
+      "variableSyntax": "\\${([ ~:a-zA-Z0-9._@'\",\\-\\/\\(\\)]+?)}",
+      "name": "aws",
+      "runtime": "nodejs8.10",
+      "profile": "default",
+      "stackName": "name-nathanialmcconnell-www",
+      "memorySize": 128,
+      "timeout": 10,
+      "logRetentionInDays": 14,
+      "deploymentBucket": "name.nathanialmcconnell.deploys",
+      "environment": {
+        "deploymentBucketName": "name.nathanialmcconnell.deploys",
+        "siteBucketName": "name.nathanialmcconnell.www",
+        "siteBucketNameDashes": "name-nathanialmcconnell-www",
+        "siteHostedZoneId": "Z3GHCWB8V7K4G7",
+        "siteHostedZoneName": "nathanialmcconnell.name.",
+        "gitHubOwner": "FluxAugur",
+        "gitHubRepo": "nathanialmcconnell.name",
+        "gitHubBranch": "master",
+        "gitHubToken": "b0abbfc28726274f377ecede9a7487ff21dc8ed5",
+        "buildType": "LINUX_CONTAINER",
+        "buildComputeType": "BUILD_GENERAL1_SMALL",
+        "buildImage": "aws/codebuild/nodejs:8.11.0",
+        "algoliaAppId": "VX77OAX5PA",
+        "algoliaSearchOnlyApiKey": "cbe31a2ca14943d57db58b42e7edf262",
+        "algoliaAdminApiKey": "2ab99be568c5d4b24523f41907096ecc",
+        "algoliaIndexName": "CONTENT"
+      },
+      "deploymentBucketObject": {
+        "name": "name.nathanialmcconnell.deploys"
+      },
+      "versionFunctions": true,
+      "remoteFunctionData": null,
+      "compiledCloudFormationTemplate": {
+        "AWSTemplateFormatVersion": "2010-09-09",
+        "Description": "The AWS CloudFormation template for this Serverless application",
+        "Resources": {
+          "CodeBuildRole": {
+            "Type": "AWS::IAM::Role",
+            "Properties": {
+              "RoleName": "name.nathanialmcconnell.www.CodeBuildRole",
+              "AssumeRolePolicyDocument": {
+                "Version": "2012-10-17",
+                "Statement": [
+                  {
+                    "Effect": "Allow",
+                    "Principal": {
+                      "Service": [
+                        "codebuild.amazonaws.com"
+                      ]
+                    },
+                    "Action": [
+                      "sts:AssumeRole"
+                    ]
+                  }
+                ]
+              },
+              "Path": "/service-role/",
+              "Policies": [
+                {
+                  "PolicyName": "codebuild-service",
+                  "PolicyDocument": {
+                    "Statement": [
+                      {
+                        "Effect": "Allow",
+                        "Action": [
+                          "s3:GetObject",
+                          "s3:GetObjectVerion",
+                          "s3:GetBucketVersioning",
+                          "s3:PutObject"
+                        ],
+                        "Resource": {
+                          "Fn::Join": [
+                            "",
+                            [
+                              "arn:aws:s3:::",
+                              {
+                                "Ref": "PipelineBucket"
+                              }
+                            ]
+                          ]
+                        }
+                      },
+                      {
+                        "Effect": "Allow",
+                        "Action": [
+                          "s3:GetObject",
+                          "s3:GetObjectVersion",
+                          "s3:GetBucketVersioning",
+                          "s3:PutObject",
+                          "s3:PutObjectAcl"
+                        ],
+                        "Resource": {
+                          "Fn::Join": [
+                            "",
+                            [
+                              "arn:aws:s3:::",
+                              {
+                                "Ref": "SiteBucket"
+                              }
+                            ]
+                          ]
+                        }
+                      },
+                      {
+                        "Effect": "Allow",
+                        "Action": [
+                          "logs:CreateLogGroup",
+                          "logs:CreateLogStream",
+                          "logs:PutLogEvents",
+                          "cloudfront:CreateInvalidation"
+                        ],
+                        "Resource": "*"
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          },
+          "CodePipelineRole": {
+            "Type": "AWS::IAM::Role",
+            "Properties": {
+              "RoleName": "name.nathanialmcconnell.www.CodePipelineRole",
+              "AssumeRolePolicyDocument": {
+                "Version": "2012-10-17",
+                "Statement": [
+                  {
+                    "Effect": "Allow",
+                    "Principal": {
+                      "Service": [
+                        "codepipeline.amazonaws.com"
+                      ]
+                    },
+                    "Action": [
+                      "sts:AssumeRole"
+                    ]
+                  }
+                ]
+              },
+              "Path": "/service-role/",
+              "Policies": [
+                {
+                  "PolicyName": "codepipeline-service",
+                  "PolicyDocument": {
+                    "Statement": [
+                      {
+                        "Effect": "Allow",
+                        "Action": [
+                          "s3:GetObject",
+                          "s3:getObjectVersion",
+                          "s3:GetBucketVersioning"
+                        ],
+                        "Resource": {
+                          "Fn::Join": [
+                            "",
+                            [
+                              "arn:aws:s3:::",
+                              {
+                                "Ref": "PipelineBucket"
+                              }
+                            ]
+                          ]
+                        }
+                      },
+                      {
+                        "Effect": "Allow",
+                        "Action": [
+                          "s3:PutObject"
+                        ],
+                        "Resource": [
+                          "arn:aws:s3:::codepipeline*"
+                        ]
+                      },
+                      {
+                        "Effect": "Allow",
+                        "Action": [
+                          "codebuild:BatchGetBuilds",
+                          "codebuild:StartBuild"
+                        ],
+                        "Resource": "*"
+                      },
+                      {
+                        "Effect": "Allow",
+                        "Action": [
+                          "s3:*",
+                          "cloudformation:*",
+                          "iam:PassRole"
+                        ],
+                        "Resource": "*"
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          },
+          "SiteBucket": {
+            "Type": "AWS::S3::Bucket",
+            "DeletionPolicy": "Delete",
+            "Properties": {
+              "AccessControl": "PublicRead",
+              "BucketName": "name.nathanialmcconnell.www",
+              "WebsiteConfiguration": {
+                "IndexDocument": "index.html"
+              }
+            }
+          },
+          "PipelineBucket": {
+            "Type": "AWS::S3::Bucket",
+            "DeletionPolicy": "Delete",
+            "Properties": {
+              "BucketName": "name.nathanialmcconnell.www.pipeline"
+            }
+          },
+          "CodeBuildDeploySite": {
+            "Type": "AWS::CodeBuild::Project",
+            "DependsOn": "CodeBuildRole",
+            "Properties": {
+              "Name": "name-nathanialmcconnell-www-DeploySite",
+              "Description": "Deploy site to S3",
+              "ServiceRole": {
+                "Fn::GetAtt": [
+                  "CodeBuildRole",
+                  "Arn"
+                ]
+              },
+              "Artifacts": {
+                "Type": "CODEPIPELINE"
+              },
+              "Environment": {
+                "Type": "LINUX_CONTAINER",
+                "ComputeType": "BUILD_GENERAL1_SMALL",
+                "Image": "aws/codebuild/nodejs:8.11.0",
+                "EnvironmentVariables": [
+                  {
+                    "Name": "ALGOLIA_APP_ID",
+                    "Value": "VX77OAX5PA"
+                  },
+                  {
+                    "Name": "ALGOLIA_SEARCH_ONLY_API_KEY",
+                    "Value": "cbe31a2ca14943d57db58b42e7edf262"
+                  },
+                  {
+                    "Name": "ALGOLIA_ADMIN_API_KEY",
+                    "Value": "2ab99be568c5d4b24523f41907096ecc"
+                  },
+                  {
+                    "Name": "ALGOLIA_INDEX_NAME",
+                    "Value": "CONTENT"
+                  }
+                ]
+              },
+              "Source": {
+                "Type": "CODEPIPELINE",
+                "BuildSpec": {
+                  "Fn::Sub": "version: 0.2\nphases:\n  pre_build:\n    commands:\n      - echo Installing source NPM dependencies...\n      - npm install\n      - echo Cleaning project...\n      - npm run clean\n  build:\n    commands:\n      - echo Build started on `date`\n      - npm run build\n  post_build:\n    commands:\n      - aws s3 sync --acl public-read public s3://name.nathanialmcconnell.www/\n      - aws s3 cp --acl public-read --cache-control='max-age=0, no-cache, no-store, must-revalidate' ./public/sw.js s3://name.nathanialmcconnell.www/\n      - aws s3 cp --acl public-read --cache-control='max-age=0, no-cache, no-store, must-revalidate' ./public/index.html s3://name.nathanialmcconnell.www/\n      - Fn::Join:\n          - \" \"\n          - - \"aws cloudfront create-invalidation --distribution-id\"\n            - Ref: Distribution\n            - \"--paths /index.html /sw.js\"\nartifacts:\n  files:\n    - \"**/*\"\n  base-directory: public\n"
+                }
+              },
+              "TimeoutInMinutes": 10
+            }
+          },
+          "Pipeline": {
+            "Type": "AWS::CodePipeline::Pipeline",
+            "Properties": {
+              "Name": "name.nathanialmcconnell.www.Pipeline",
+              "RoleArn": {
+                "Fn::GetAtt": [
+                  "CodePipelineRole",
+                  "Arn"
+                ]
+              },
+              "Stages": [
+                {
+                  "Name": "Source",
+                  "Actions": [
+                    {
+                      "InputArtifacts": [],
+                      "Name": "Source",
+                      "ActionTypeId": {
+                        "Category": "Source",
+                        "Owner": "ThirdParty",
+                        "Version": "1",
+                        "Provider": "GitHub"
+                      },
+                      "OutputArtifacts": [
+                        {
+                          "Name": "SourceArtifacts"
+                        }
+                      ],
+                      "Configuration": {
+                        "Owner": "FluxAugur",
+                        "Repo": "nathanialmcconnell.name",
+                        "Branch": "master",
+                        "OAuthToken": "b0abbfc28726274f377ecede9a7487ff21dc8ed5"
+                      },
+                      "RunOrder": 1
+                    }
+                  ]
+                },
+                {
+                  "Name": "Deploy",
+                  "Actions": [
+                    {
+                      "Name": "Artifact",
+                      "ActionTypeId": {
+                        "Category": "Build",
+                        "Owner": "AWS",
+                        "Version": "1",
+                        "Provider": "CodeBuild"
+                      },
+                      "InputArtifacts": [
+                        {
+                          "Name": "SourceArtifacts"
+                        }
+                      ],
+                      "OutputArtifacts": [
+                        {
+                          "Name": "DeploymentArtifacts"
+                        }
+                      ],
+                      "Configuration": {
+                        "ProjectName": {
+                          "Ref": "CodeBuildDeploySite"
+                        }
+                      },
+                      "RunOrder": 1
+                    }
+                  ]
+                }
+              ],
+              "ArtifactStore": {
+                "Type": "S3",
+                "Location": {
+                  "Ref": "PipelineBucket"
+                }
+              }
+            }
+          },
+          "Distribution": {
+            "Type": "AWS::CloudFront::Distribution",
+            "Properties": {
+              "DistributionConfig": {
+                "Enabled": true,
+                "DefaultRootObject": "index.html",
+                "Origins": [
+                  {
+                    "DomainName": {
+                      "Fn::GetAtt": [
+                        "SiteBucket",
+                        "DomainName"
+                      ]
+                    },
+                    "Id": "name.nathanialmcconnell.www",
+                    "S3OriginConfig": {
+                      "OriginAccessIdentity": ""
+                    }
+                  }
+                ],
+                "HttpVersion": "http2",
+                "IPV6Enabled": true,
+                "DefaultCacheBehavior": {
+                  "MinTTL": 86400,
+                  "MaxTTL": 31536000,
+                  "ForwardedValues": {
+                    "QueryString": true
+                  },
+                  "TargetOriginId": "name.nathanialmcconnell.www",
+                  "ViewerProtocolPolicy": "redirect-to-https"
+                },
+                "ViewerCertificate": {
+                  "SslSupportMethod": "sni-only",
+                  "AcmCertificateArn": "arn:aws:acm:us-east-1:096188391785:certificate/2ab36cf4-10d7-4a14-bb81-79b6555df0f8"
+                }
+              }
+            }
+          },
+          "ForceRemoveBucketCli": {
+            "Type": "Custom::cfnCliWrapper",
+            "Properties": {
+              "ServiceToken": "arn:aws:lambda:us-east-1:096188391785:function:cli2cloudformation-dev-cli",
+              "CliCommandDelete": "aws s3 rb s3://name.nathanialmcconnell.www --force"
+            }
+          }
+        },
+        "Outputs": {
+          "ServerlessDeploymentBucketName": {
+            "Value": "name.nathanialmcconnell.deploys"
+          },
+          "PipelineUrl": {
+            "Value": {
+              "Fn::Join": [
+                "",
+                [
+                  "https://console.aws.amazon.com/codepipeline/home?region=us-east-1#/view/",
+                  {
+                    "Ref": "Pipeline"
+                  }
+                ]
+              ]
+            },
+            "Description": "CodePipeline URL"
+          },
+          "SiteUrl": {
+            "Value": {
+              "Fn::GetAtt": [
+                "SiteBucket",
+                "WebsiteURL"
+              ]
+            },
+            "Description": "S3 Website URL"
+          }
+        }
+      }
+    },
+    "pluginsData": {},
+    "functions": {},
+    "resources": {
+      "Resources": {
+        "CodeBuildRole": {
+          "Type": "AWS::IAM::Role",
+          "Properties": {
+            "RoleName": "name.nathanialmcconnell.www.CodeBuildRole",
+            "AssumeRolePolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Principal": {
+                    "Service": [
+                      "codebuild.amazonaws.com"
+                    ]
+                  },
+                  "Action": [
+                    "sts:AssumeRole"
+                  ]
+                }
+              ]
+            },
+            "Path": "/service-role/",
+            "Policies": [
+              {
+                "PolicyName": "codebuild-service",
+                "PolicyDocument": {
+                  "Statement": [
+                    {
+                      "Effect": "Allow",
+                      "Action": [
+                        "s3:GetObject",
+                        "s3:GetObjectVerion",
+                        "s3:GetBucketVersioning",
+                        "s3:PutObject"
+                      ],
+                      "Resource": {
+                        "Fn::Join": [
+                          "",
+                          [
+                            "arn:aws:s3:::",
+                            {
+                              "Ref": "PipelineBucket"
+                            }
+                          ]
+                        ]
+                      }
+                    },
+                    {
+                      "Effect": "Allow",
+                      "Action": [
+                        "s3:GetObject",
+                        "s3:GetObjectVersion",
+                        "s3:GetBucketVersioning",
+                        "s3:PutObject",
+                        "s3:PutObjectAcl"
+                      ],
+                      "Resource": {
+                        "Fn::Join": [
+                          "",
+                          [
+                            "arn:aws:s3:::",
+                            {
+                              "Ref": "SiteBucket"
+                            }
+                          ]
+                        ]
+                      }
+                    },
+                    {
+                      "Effect": "Allow",
+                      "Action": [
+                        "logs:CreateLogGroup",
+                        "logs:CreateLogStream",
+                        "logs:PutLogEvents",
+                        "cloudfront:CreateInvalidation"
+                      ],
+                      "Resource": "*"
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        "CodePipelineRole": {
+          "Type": "AWS::IAM::Role",
+          "Properties": {
+            "RoleName": "name.nathanialmcconnell.www.CodePipelineRole",
+            "AssumeRolePolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Principal": {
+                    "Service": [
+                      "codepipeline.amazonaws.com"
+                    ]
+                  },
+                  "Action": [
+                    "sts:AssumeRole"
+                  ]
+                }
+              ]
+            },
+            "Path": "/service-role/",
+            "Policies": [
+              {
+                "PolicyName": "codepipeline-service",
+                "PolicyDocument": {
+                  "Statement": [
+                    {
+                      "Effect": "Allow",
+                      "Action": [
+                        "s3:GetObject",
+                        "s3:getObjectVersion",
+                        "s3:GetBucketVersioning"
+                      ],
+                      "Resource": {
+                        "Fn::Join": [
+                          "",
+                          [
+                            "arn:aws:s3:::",
+                            {
+                              "Ref": "PipelineBucket"
+                            }
+                          ]
+                        ]
+                      }
+                    },
+                    {
+                      "Effect": "Allow",
+                      "Action": [
+                        "s3:PutObject"
+                      ],
+                      "Resource": [
+                        "arn:aws:s3:::codepipeline*"
+                      ]
+                    },
+                    {
+                      "Effect": "Allow",
+                      "Action": [
+                        "codebuild:BatchGetBuilds",
+                        "codebuild:StartBuild"
+                      ],
+                      "Resource": "*"
+                    },
+                    {
+                      "Effect": "Allow",
+                      "Action": [
+                        "s3:*",
+                        "cloudformation:*",
+                        "iam:PassRole"
+                      ],
+                      "Resource": "*"
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        "SiteBucket": {
+          "Type": "AWS::S3::Bucket",
+          "DeletionPolicy": "Delete",
+          "Properties": {
+            "AccessControl": "PublicRead",
+            "BucketName": "name.nathanialmcconnell.www",
+            "WebsiteConfiguration": {
+              "IndexDocument": "index.html"
+            }
+          }
+        },
+        "PipelineBucket": {
+          "Type": "AWS::S3::Bucket",
+          "DeletionPolicy": "Delete",
+          "Properties": {
+            "BucketName": "name.nathanialmcconnell.www.pipeline"
+          }
+        },
+        "CodeBuildDeploySite": {
+          "Type": "AWS::CodeBuild::Project",
+          "DependsOn": "CodeBuildRole",
+          "Properties": {
+            "Name": "name-nathanialmcconnell-www-DeploySite",
+            "Description": "Deploy site to S3",
+            "ServiceRole": {
+              "Fn::GetAtt": [
+                "CodeBuildRole",
+                "Arn"
+              ]
+            },
+            "Artifacts": {
+              "Type": "CODEPIPELINE"
+            },
+            "Environment": {
+              "Type": "LINUX_CONTAINER",
+              "ComputeType": "BUILD_GENERAL1_SMALL",
+              "Image": "aws/codebuild/nodejs:8.11.0",
+              "EnvironmentVariables": [
+                {
+                  "Name": "ALGOLIA_APP_ID",
+                  "Value": "VX77OAX5PA"
+                },
+                {
+                  "Name": "ALGOLIA_SEARCH_ONLY_API_KEY",
+                  "Value": "cbe31a2ca14943d57db58b42e7edf262"
+                },
+                {
+                  "Name": "ALGOLIA_ADMIN_API_KEY",
+                  "Value": "2ab99be568c5d4b24523f41907096ecc"
+                },
+                {
+                  "Name": "ALGOLIA_INDEX_NAME",
+                  "Value": "CONTENT"
+                }
+              ]
+            },
+            "Source": {
+              "Type": "CODEPIPELINE",
+              "BuildSpec": {
+                "Fn::Sub": "version: 0.2\nphases:\n  pre_build:\n    commands:\n      - echo Installing source NPM dependencies...\n      - npm install\n      - echo Cleaning project...\n      - npm run clean\n  build:\n    commands:\n      - echo Build started on `date`\n      - npm run build\n  post_build:\n    commands:\n      - aws s3 sync --acl public-read public s3://name.nathanialmcconnell.www/\n      - aws s3 cp --acl public-read --cache-control='max-age=0, no-cache, no-store, must-revalidate' ./public/sw.js s3://name.nathanialmcconnell.www/\n      - aws s3 cp --acl public-read --cache-control='max-age=0, no-cache, no-store, must-revalidate' ./public/index.html s3://name.nathanialmcconnell.www/\n      - Fn::Join:\n          - \" \"\n          - - \"aws cloudfront create-invalidation --distribution-id\"\n            - Ref: Distribution\n            - \"--paths /index.html /sw.js\"\nartifacts:\n  files:\n    - \"**/*\"\n  base-directory: public\n"
+              }
+            },
+            "TimeoutInMinutes": 10
+          }
+        },
+        "Pipeline": {
+          "Type": "AWS::CodePipeline::Pipeline",
+          "Properties": {
+            "Name": "name.nathanialmcconnell.www.Pipeline",
+            "RoleArn": {
+              "Fn::GetAtt": [
+                "CodePipelineRole",
+                "Arn"
+              ]
+            },
+            "Stages": [
+              {
+                "Name": "Source",
+                "Actions": [
+                  {
+                    "InputArtifacts": [],
+                    "Name": "Source",
+                    "ActionTypeId": {
+                      "Category": "Source",
+                      "Owner": "ThirdParty",
+                      "Version": "1",
+                      "Provider": "GitHub"
+                    },
+                    "OutputArtifacts": [
+                      {
+                        "Name": "SourceArtifacts"
+                      }
+                    ],
+                    "Configuration": {
+                      "Owner": "FluxAugur",
+                      "Repo": "nathanialmcconnell.name",
+                      "Branch": "master",
+                      "OAuthToken": "b0abbfc28726274f377ecede9a7487ff21dc8ed5"
+                    },
+                    "RunOrder": 1
+                  }
+                ]
+              },
+              {
+                "Name": "Deploy",
+                "Actions": [
+                  {
+                    "Name": "Artifact",
+                    "ActionTypeId": {
+                      "Category": "Build",
+                      "Owner": "AWS",
+                      "Version": "1",
+                      "Provider": "CodeBuild"
+                    },
+                    "InputArtifacts": [
+                      {
+                        "Name": "SourceArtifacts"
+                      }
+                    ],
+                    "OutputArtifacts": [
+                      {
+                        "Name": "DeploymentArtifacts"
+                      }
+                    ],
+                    "Configuration": {
+                      "ProjectName": {
+                        "Ref": "CodeBuildDeploySite"
+                      }
+                    },
+                    "RunOrder": 1
+                  }
+                ]
+              }
+            ],
+            "ArtifactStore": {
+              "Type": "S3",
+              "Location": {
+                "Ref": "PipelineBucket"
+              }
+            }
+          }
+        },
+        "Distribution": {
+          "Type": "AWS::CloudFront::Distribution",
+          "Properties": {
+            "DistributionConfig": {
+              "Enabled": true,
+              "DefaultRootObject": "index.html",
+              "Origins": [
+                {
+                  "DomainName": {
+                    "Fn::GetAtt": [
+                      "SiteBucket",
+                      "DomainName"
+                    ]
+                  },
+                  "Id": "name.nathanialmcconnell.www",
+                  "S3OriginConfig": {
+                    "OriginAccessIdentity": ""
+                  }
+                }
+              ],
+              "HttpVersion": "http2",
+              "IPV6Enabled": true,
+              "DefaultCacheBehavior": {
+                "MinTTL": 86400,
+                "MaxTTL": 31536000,
+                "ForwardedValues": {
+                  "QueryString": true
+                },
+                "TargetOriginId": "name.nathanialmcconnell.www",
+                "ViewerProtocolPolicy": "redirect-to-https"
+              },
+              "ViewerCertificate": {
+                "SslSupportMethod": "sni-only",
+                "AcmCertificateArn": "arn:aws:acm:us-east-1:096188391785:certificate/2ab36cf4-10d7-4a14-bb81-79b6555df0f8"
+              }
+            }
+          }
+        },
+        "ForceRemoveBucketCli": {
+          "Type": "Custom::cfnCliWrapper",
+          "Properties": {
+            "ServiceToken": "arn:aws:lambda:us-east-1:096188391785:function:cli2cloudformation-dev-cli",
+            "CliCommandDelete": "aws s3 rb s3://name.nathanialmcconnell.www --force"
+          }
+        }
+      },
+      "Outputs": {
+        "PipelineUrl": {
+          "Value": {
+            "Fn::Join": [
+              "",
+              [
+                "https://console.aws.amazon.com/codepipeline/home?region=us-east-1#/view/",
+                {
+                  "Ref": "Pipeline"
+                }
+              ]
+            ]
+          },
+          "Description": "CodePipeline URL"
+        },
+        "SiteUrl": {
+          "Value": {
+            "Fn::GetAtt": [
+              "SiteBucket",
+              "WebsiteURL"
+            ]
+          },
+          "Description": "S3 Website URL"
+        }
+      }
+    },
+    "layers": {}
+  },
+  "package": {
+    "artifactDirectoryName": "serverless/name.nathanialmcconnell.www/dev/1551462073617-2019-03-01T17:41:13.617Z",
+    "artifact": ""
+  }
+}

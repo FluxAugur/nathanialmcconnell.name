@@ -307,7 +307,7 @@ Resources:
           - CNAME: !GetAtt SiteBucket.DomainName
             Quantity: 1
         HttpVersion: http2
-        IsIPV6Enabled: true
+        IPV6Enabled: true
         DefaultCacheBehavior:
           MinTTL: 86400
           MaxTTL: 31536000
