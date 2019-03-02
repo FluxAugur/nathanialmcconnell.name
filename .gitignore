@@ -59,7 +59,7 @@ typings/
 config.*.*.yml
 
 .cache/
-*.serverless/
+**/.serverless/
 .DS_Store
 /public
 /temp
