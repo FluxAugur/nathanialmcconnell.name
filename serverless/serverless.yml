@@ -76,10 +76,15 @@ resources:
                     - s3:PutObject
                     - s3:PutObjectAcl
                   Resource:
-                    Fn::Join:
-                      - ""
-                      - - "arn:aws:s3:::"
-                        - Ref: SiteBucket
+                    - Fn::Join:
+                        - ""
+                        - - "arn:aws:s3:::"
+                          - Ref: SiteBucket
+                    - Fn::Join:
+                        - ""
+                        - - "arn:aws:s3:::"
+                          - Ref: SiteBucket
+                          - "/*"
                 - Effect: Allow
                   Action:
                     - logs:CreateLogGroup
