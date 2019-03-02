@@ -148,7 +148,6 @@ resources:
       Type: AWS::S3::Bucket
       DeletionPolicy: Delete
       Properties:
-        # AccessControl: Private
         BucketName: ${self:provider.environment.siteBucketName}.pipeline
     CodeBuildDeploySite:
       Type: AWS::CodeBuild::Project
@@ -193,7 +192,6 @@ resources:
                   - npm run build
                 post_build:
                   commands:
-                  - aws s3 cp --recursive --acl public-read public s3://${self:provider.environment.siteBucketName}/
                   - aws s3 sync --acl public-read public s3://${self:provider.environment.siteBucketName}/
                   - aws s3 cp --acl public-read --cache-control='max-age=0, no-cache, no-store, must-revalidate' public/sw.js s3://${self:provider.environment.siteBucketName}/
                   - aws s3 cp --acl public-read --cache-control='max-age=0, no-cache, no-store, must-revalidate' public/index.html s3://${self:provider.environment.siteBucketName}/
