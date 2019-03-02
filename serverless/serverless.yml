@@ -148,7 +148,7 @@ resources:
       Type: AWS::S3::Bucket
       DeletionPolicy: Delete
       Properties:
-        AccessControl: Private
+        # AccessControl: Private
         BucketName: ${self:provider.environment.siteBucketName}.pipeline
     CodeBuildDeploySite:
       Type: AWS::CodeBuild::Project
