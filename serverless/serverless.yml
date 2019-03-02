@@ -271,11 +271,6 @@ resources:
           ViewerCertificate:
             SslSupportMethod: sni-only
             AcmCertificateArn: arn:aws:acm:us-east-1:096188391785:certificate/2ab36cf4-10d7-4a14-bb81-79b6555df0f8
-    ForceRemoveBucketCli:
-      Type: Custom::cfnCliWrapper
-      Properties:
-        ServiceToken: arn:aws:lambda:us-east-1:096188391785:function:cli2cloudformation-${self:provider.stage}-cli
-        CliCommandDelete: aws s3 rb s3://${self:provider.environment.siteBucketName} --force
   Outputs:
     PipelineUrl:
       Value:
