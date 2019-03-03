@@ -200,11 +200,11 @@ resources:
                   - aws s3 sync --acl public-read public s3://${self:provider.environment.siteBucketName}/
                   - aws s3 cp --acl public-read --cache-control='max-age=0, no-cache, no-store, must-revalidate' public/sw.js s3://${self:provider.environment.siteBucketName}/
                   - aws s3 cp --acl public-read --cache-control='max-age=0, no-cache, no-store, must-revalidate' public/index.html s3://${self:provider.environment.siteBucketName}/
-                  # - Fn::Join:
-                  #   - " "
-                  #   - - "aws cloudfront create-invalidation --distribution-id"
-                  #     - Ref: Distribution
-                  #     - "--paths /index.html /sw.js"
+                  - Fn::Join:
+                    - " "
+                    - - "aws cloudfront create-invalidation --distribution-id"
+                      - Ref: Distribution
+                      - "--paths /index.html /sw.js"
               artifacts:
                 files:
                 - "**/*"
@@ -256,36 +256,36 @@ resources:
           Type: S3
           Location:
             Ref: PipelineBucket
-    # Distribution:
-    #   Type: AWS::CloudFront::Distribution
-    #   Properties:
-    #     DistributionConfig:
-    #       Enabled: true
-    #       DefaultRootObject: index.html
-    #       Origins:
-    #         - DomainName:
-    #             Fn::GetAtt:
-    #               - SiteBucket
-    #               - DomainName
-    #           Id: ${self:provider.environment.siteBucketName}
-    #           S3OriginConfig:
-    #             OriginAccessIdentity: ""
-    #       Aliases:
-    #         - Fn::GetAtt:
-    #             - SiteBucket
-    #             - DomainName
-    #       HttpVersion: http2
-    #       IPV6Enabled: true
-    #       DefaultCacheBehavior:
-    #         MinTTL: 86400
-    #         MaxTTL: 31536000
-    #         ForwardedValues:
-    #           QueryString: true
-    #         TargetOriginId: ${self:provider.environment.siteBucketName}
-    #         ViewerProtocolPolicy: redirect-to-https
-    #       ViewerCertificate:
-    #         SslSupportMethod: sni-only
-    #         AcmCertificateArn: arn:aws:acm:us-east-1:096188391785:certificate/2ab36cf4-10d7-4a14-bb81-79b6555df0f8
+    Distribution:
+      Type: AWS::CloudFront::Distribution
+      Properties:
+        DistributionConfig:
+          Enabled: true
+          DefaultRootObject: index.html
+          Origins:
+            - DomainName:
+                Fn::GetAtt:
+                  - SiteBucket
+                  - DomainName
+              Id: ${self:provider.environment.siteBucketName}
+              S3OriginConfig:
+                OriginAccessIdentity: ""
+          Aliases:
+            - Fn::GetAtt:
+                - SiteBucket
+                - DomainName
+          HttpVersion: http2
+          IPV6Enabled: true
+          DefaultCacheBehavior:
+            MinTTL: 86400
+            MaxTTL: 31536000
+            ForwardedValues:
+              QueryString: true
+            TargetOriginId: ${self:provider.environment.siteBucketName}
+            ViewerProtocolPolicy: redirect-to-https
+          ViewerCertificate:
+            SslSupportMethod: sni-only
+            AcmCertificateArn: arn:aws:acm:us-east-1:096188391785:certificate/2ab36cf4-10d7-4a14-bb81-79b6555df0f8
   Outputs:
     PipelineUrl:
       Value:
