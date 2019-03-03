@@ -18,19 +18,19 @@ provider:
     deploymentBucketName: name.nathanialmcconnell.deploys
     siteBucketName: name.nathanialmcconnell.www
     siteBucketNameDashes: name-nathanialmcconnell-www
-    siteHostedZoneId: ${file(../config.${self:provider.region}.${self:provider.stage}.yml):siteHostedZoneId}
-    siteHostedZoneName: ${file(../config.${self:provider.region}.${self:provider.stage}.yml):siteHostedZoneName}
-    gitHubOwner: ${file(../config.${self:provider.region}.${self:provider.stage}.yml):gitHubOwner}
-    gitHubRepo: ${file(../config.${self:provider.region}.${self:provider.stage}.yml):gitHubRepo}
-    gitHubBranch: ${file(../config.${self:provider.region}.${self:provider.stage}.yml):gitHubBranch}
-    gitHubToken: ${file(../config.${self:provider.region}.${self:provider.stage}.yml):gitHubToken}
+    siteHostedZoneId: ${file(../config.${self:provider.region}.${self:provider.stage}.yml):default.siteHostedZoneId}
+    siteHostedZoneName: ${file(../config.${self:provider.region}.${self:provider.stage}.yml):default.siteHostedZoneName}
+    gitHubOwner: ${file(../config.${self:provider.region}.${self:provider.stage}.yml):default.gitHubOwner}
+    gitHubRepo: ${file(../config.${self:provider.region}.${self:provider.stage}.yml):default.gitHubRepo}
+    gitHubBranch: ${file(../config.${self:provider.region}.${self:provider.stage}.yml):default.gitHubBranch}
+    gitHubToken: ${file(../config.${self:provider.region}.${self:provider.stage}.yml):default.gitHubToken}
     buildType: LINUX_CONTAINER
     buildComputeType: BUILD_GENERAL1_SMALL
     buildImage: aws/codebuild/nodejs:8.11.0
-    algoliaAppId: ${file(../config.${self:provider.region}.${self:provider.stage}.yml):algoliaAppId}
-    algoliaSearchOnlyApiKey: ${file(../config.${self:provider.region}.${self:provider.stage}.yml):algoliaSearchOnlyApiKey}
-    algoliaAdminApiKey: ${file(../config.${self:provider.region}.${self:provider.stage}.yml):algoliaAdminApiKey}
-    algoliaIndexName: ${file(../config.${self:provider.region}.${self:provider.stage}.yml):algoliaIndexName}
+    algoliaAppId: ${file(../config.${self:provider.region}.${self:provider.stage}.yml):default.algoliaAppId}
+    algoliaSearchOnlyApiKey: ${file(../config.${self:provider.region}.${self:provider.stage}.yml):default.algoliaSearchOnlyApiKey}
+    algoliaAdminApiKey: ${file(../config.${self:provider.region}.${self:provider.stage}.yml):default.algoliaAdminApiKey}
+    algoliaIndexName: ${file(../config.${self:provider.region}.${self:provider.stage}.yml):default.algoliaIndexName}
 
 resources:
   Resources:
@@ -198,13 +198,13 @@ resources:
                 post_build:
                   commands:
                   - aws s3 sync --acl public-read public s3://${self:provider.environment.siteBucketName}/
-                  - aws s3 cp --acl public-read --cache-control='max-age=0, no-cache, no-store, must-revalidate' public/sw.js s3://${self:provider.environment.siteBucketName}/
+                  - aws s3 cp --acl public-read --cache-control='max-age=0, no-cache, no-store, must-revalidate' public/service-worker.js s3://${self:provider.environment.siteBucketName}/
                   - aws s3 cp --acl public-read --cache-control='max-age=0, no-cache, no-store, must-revalidate' public/index.html s3://${self:provider.environment.siteBucketName}/
                   - Fn::Join:
-                    - " "
-                    - - "aws cloudfront create-invalidation --distribution-id"
-                      - Ref: Distribution
-                      - "--paths /index.html /sw.js"
+                      - " "
+                      - - "aws cloudfront create-invalidation --distribution-id"
+                        - Ref: Distribution
+                        - "--paths /index.html /service-worker.js"
               artifacts:
                 files:
                 - "**/*"

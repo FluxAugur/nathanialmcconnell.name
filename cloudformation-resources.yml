@@ -4,87 +4,87 @@ Resources:
     Properties:
       RoleName: Fn::Sub ${siteBucketName}.CodeBuildRole
       AssumeRolePolicyDocument:
-        Version: '2012-10-17'
+        Version: "2012-10-17"
         Statement:
-        - Effect: Allow
-          Principal:
-            Service:
-            - codebuild.amazonaws.com
-          Action:
-          - sts:AssumeRole
-      Path: '/service-role/'
+          - Effect: Allow
+            Principal:
+              Service:
+                - codebuild.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      Path: "/service-role/"
       Policies:
-      - PolicyName: codebuild-service
-        PolicyDocument:
-          Statement:
-          - Effect: Allow
-            Action:
-            - s3:GetObject
-            - s3:GetObjectVerion
-            - s3:GetBucketVersioning
-            - s3:PutObject
-            Resource:
-            - Fn::GetAtt PipelineBucket.Arn
-            - Fn::Join ['', [Fn::GetAtt PipelineBucket.Arn, '/*']]
-          - Effect: Allow
-            Action:
-            - s3:GetObject
-            - s3:GetObjectVersion
-            - s3:GetBucketVersioning
-            - s3:PutObject
-            - s3:PutObjectAcl
-            Resource:
-            - Fn::GetAtt SiteBucket.Arn
-            - Fn::Join ['', [Fn::GetAtt SiteBucket.Arn, '/*']]
-          - Effect: Allow
-            Action:
-            - logs:CreateLogGroup
-            - logs:CreateLogStream
-            - logs:PutLogEvents
-            - cloudfront:CreateInvalidation
-            Resource: '*'
+        - PolicyName: codebuild-service
+          PolicyDocument:
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:GetObject
+                  - s3:GetObjectVerion
+                  - s3:GetBucketVersioning
+                  - s3:PutObject
+                Resource:
+                  - Fn::GetAtt PipelineBucket.Arn
+                  - Fn::Join ['', [Fn::GetAtt PipelineBucket.Arn, '/*']]
+              - Effect: Allow
+                Action:
+                  - s3:GetObject
+                  - s3:GetObjectVersion
+                  - s3:GetBucketVersioning
+                  - s3:PutObject
+                  - s3:PutObjectAcl
+                Resource:
+                  - Fn::GetAtt SiteBucket.Arn
+                  - Fn::Join ['', [Fn::GetAtt SiteBucket.Arn, '/*']]
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                  - cloudfront:CreateInvalidation
+                Resource: "*"
   CodePipelineRole:
     Type: AWS::IAM::Role
     Properties:
       RoleName: Fn::Sub ${siteBucketName}.CodePipelineRole
       AssumeRolePolicyDocument:
-        Version: '2012-10-17'
+        Version: "2012-10-17"
         Statement:
-        - Effect: Allow
-          Principal:
-            Service:
-            - codepipeline.amazonaws.com
-          Action:
-          - sts:AssumeRole
-      Path: '/service-role/'
+          - Effect: Allow
+            Principal:
+              Service:
+                - codepipeline.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      Path: "/service-role/"
       Policies:
-      - PolicyName: codepipeline-service
-        PolicyDocument:
-          Statement:
-          - Effect: Allow
-            Action:
-            - s3:GetObject
-            - s3:getObjectVersion
-            - s3:GetBucketVersioning
-            Resource:
-            - Fn::GetAtt PipelineBucket.Arn
-            - Fn::Join ['', [Fn::GetAtt PipelineBucket.Arn, '/*']]
-          - Effect: Allow
-            Action:
-            - s3:PutObject
-            Resource:
-            - arn:aws:s3:::codepipeline*
-          - Effect: Allow
-            Action:
-            - codebuild:BatchGetBuilds
-            - codebuild:StartBuild
-            Resource: '*'
-          - Effect: Allow
-            Action:
-            - s3:*
-            - cloudformation:*
-            - iam:PassRole
-            Resource: '*'
+        - PolicyName: codepipeline-service
+          PolicyDocument:
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:GetObject
+                  - s3:getObjectVersion
+                  - s3:GetBucketVersioning
+                Resource:
+                  - Fn::GetAtt PipelineBucket.Arn
+                  - Fn::Join ['', [Fn::GetAtt PipelineBucket.Arn, '/*']]
+              - Effect: Allow
+                Action:
+                  - s3:PutObject
+                Resource:
+                  - arn:aws:s3:::codepipeline*
+              - Effect: Allow
+                Action:
+                  - codebuild:BatchGetBuilds
+                  - codebuild:StartBuild
+                Resource: "*"
+              - Effect: Allow
+                Action:
+                  - s3:*
+                  - cloudformation:*
+                  - iam:PassRole
+                Resource: "*"
   SiteBucket:
     Type: AWS::S3::Bucket
     DeletionPolicy: Delete
@@ -138,12 +138,12 @@ Resources:
           post_build:
             commands:
               - aws s3 sync --acl public-read public s3://${siteBucketName}/
-              - aws s3 cp --acl public-read --cache-control='max-age=0, no-cache, no-store, must-revalidate' ./public/sw.js s3://${siteBucketName}/
+              - aws s3 cp --acl public-read --cache-control='max-age=0, no-cache, no-store, must-revalidate' ./public/service-worker.js s3://${siteBucketName}/
               - aws s3 cp --acl public-read --cache-control='max-age=0, no-cache, no-store, must-revalidate' ./public/index.html s3://${siteBucketName}/
-              - aws cloudfront create-invalidation --distribution-id ${Distribution} --paths /index.html /sw.js
+              - aws cloudfront create-invalidation --distribution-id ${Distribution} --paths /index.html /service-worker.js
         artifacts:
           files:
-            - '**/*'
+            - "**/*"
           base-directory: public
       TimeoutInMinutes: 10
   Pipeline:
@@ -152,38 +152,38 @@ Resources:
       Name: Fn::Sub ${siteBucketName}.Pipeline
       RoleArn: Fn::GetAtt CodePipelineRole.Arn
       Stages:
-      - Name: Source
-        Actions:
-        - InputArtifacts: []
-          Name: Source
-          ActionTypeId:
-            Category: Source
-            Owner: ThirdParty
-            Version: '1'
-            Provider: GitHub
-          OutputArtifacts:
-          - Name: SourceArtifacts
-          Configuration:
-            Owner: Fn::Ref gitHubOwner
-            Repo: Fn::Ref gitHubRepo
-            Branch: Fn::Ref gitHubBranch
-            OAuthToken: Fn::Ref gitHubToken
-          RunOrder: 1
-      - Name: Deploy
-        Actions:
-        - Name: Artifact
-          ActionTypeId:
-            Category: Build
-            Owner: AWS
-            Version: '1'
-            Provider: CodeBuild
-          InputArtifacts:
-          - Name: SourceArtifacts
-          OutputArtifacts:
-          - Name: DeploymentArtifacts
-          Configuration:
-            ProjectName: Fn::Ref CodeBuildDeploySite
-          RunOrder: 1
+        - Name: Source
+          Actions:
+            - InputArtifacts: []
+              Name: Source
+              ActionTypeId:
+                Category: Source
+                Owner: ThirdParty
+                Version: "1"
+                Provider: GitHub
+              OutputArtifacts:
+                - Name: SourceArtifacts
+              Configuration:
+                Owner: Fn::Ref gitHubOwner
+                Repo: Fn::Ref gitHubRepo
+                Branch: Fn::Ref gitHubBranch
+                OAuthToken: Fn::Ref gitHubToken
+              RunOrder: 1
+        - Name: Deploy
+          Actions:
+            - Name: Artifact
+              ActionTypeId:
+                Category: Build
+                Owner: AWS
+                Version: "1"
+                Provider: CodeBuild
+              InputArtifacts:
+                - Name: SourceArtifacts
+              OutputArtifacts:
+                - Name: DeploymentArtifacts
+              Configuration:
+                ProjectName: Fn::Ref CodeBuildDeploySite
+              RunOrder: 1
       ArtifactStore:
         Type: S3
         Location: Fn::Ref PipelineBucket
@@ -197,10 +197,10 @@ Resources:
           - DomainName: Fn::GetAtt SiteBucket.DomainName
             Id: Fn::Ref siteBucketName
             S3OriginConfig:
-              OriginAccessIdentity: ''
+              OriginAccessIdentity: ""
         Aliases:
-        - CNAME: Fn::GetAtt SiteBucket.DomainName
-          Quantity: 1
+          - CNAME: Fn::GetAtt SiteBucket.DomainName
+            Quantity: 1
         HttpVersion: http2
         IsIPV6Enabled: true
         DefaultCacheBehavior:
@@ -230,7 +230,7 @@ Resources:
             DNSName: Fn::GetAtt Distribution.DistributionConfig.Origin.DomainName
         - Name: Fn::Join ['.', ['www', Fn::Ref siteHostedZoneId]]
           Type: CNAME
-          TTL: '900'
+          TTL: "900"
           ResourceRecords:
             - Fn::GetAtt SiteBucket.DomainName
   ForceRemoveBucket:

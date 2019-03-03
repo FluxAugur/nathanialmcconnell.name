@@ -13,10 +13,10 @@ phases:
   post_build:
     commands:
       - aws s3 sync --acl public-read public s3://${SiteBucketName}/
-      - aws s3 cp --acl public-read --cache-control='max-age=0, no-cache, no-store, must-revalidate' ./public/sw.js s3://${SiteBucketName}/
+      - aws s3 cp --acl public-read --cache-control='max-age=0, no-cache, no-store, must-revalidate' ./public/service-worker.js s3://${SiteBucketName}/
       - aws s3 cp --acl public-read --cache-control='max-age=0, no-cache, no-store, must-revalidate' ./public/index.html s3://${SiteBucketName}/
-      - aws cloudfront create-invalidation --distribution-id ${Distribution} --paths /index.html /sw.js
+      - aws cloudfront create-invalidation --distribution-id ${Distribution} --paths /index.html /service-worker.js
 artifacts:
   files:
-    - '**/*'
+    - "**/*"
   base-directory: public
